@@ -132,13 +132,13 @@ POSTED → OPEN_FOR_BIDS → BOOKED
                ↘ CANCELLED
 ```
 
-## **Schema**
+## Database Schema Diagram
 
-Diagram file is included:
+📌 Click to view full diagram:  
+[View Schema Diagram](./schema.pdf)
 
-```
-/schema.pdf
-```
+![Schema Preview](./schema.pdf)
+
 
 Relations:
 
