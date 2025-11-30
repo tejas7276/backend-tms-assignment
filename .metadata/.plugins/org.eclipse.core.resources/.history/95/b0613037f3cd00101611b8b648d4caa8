@@ -1,0 +1,24 @@
+package com.tms.backend.repository;
+
+import com.tms.backend.entity.Bid;
+import com.tms.backend.entity.enums.BidStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.UUID;
+
+public interface BidRepository extends JpaRepository<Bid, UUID> {
+
+    List<Bid> findByLoad_LoadId(UUID loadId);
+
+    List<Bid> findByTransporter_TransporterId(UUID transporterId);
+
+    List<Bid> findByStatus(BidStatus status);
+
+    List<Bid> findByLoad_LoadIdAndTransporter_TransporterId(UUID loadId, UUID transporterId);
+
+    List<Bid> findByLoad_LoadIdAndStatus(UUID loadId, BidStatus status);
+
+    List<Bid> findByTransporter_TransporterIdAndStatus(UUID transporterId, BidStatus status);
+
+    boolean existsByLoad_LoadIdAndStatus(UUID loadId, BidStatus status); // will use in Step 3
+}

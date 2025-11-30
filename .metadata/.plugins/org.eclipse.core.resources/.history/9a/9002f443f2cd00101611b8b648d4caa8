@@ -1,0 +1,46 @@
+package com.tms.backend.controller;
+
+import com.tms.backend.dto.CreateBidRequest;
+import com.tms.backend.entity.Bid;
+import com.tms.backend.entity.enums.BidStatus;
+import com.tms.backend.service.BidService;
+import com.tms.backend.repository.BidRepository;
+
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/bid")
+public class BidController {
+
+    private final BidService bidService;
+    private final BidRepository bidRepository;
+
+    public BidController(BidService bidService, BidRepository bidRepository) {
+        this.bidService = bidService;
+        this.bidRepository = bidRepository;
+    }
+
+    @PostMapping
+    public Bid create(@RequestBody CreateBidRequest req) {
+        return bidService.createBid(req.getLoadId(), req.getTransporterId(),
+                req.getProposedRate(), req.getTrucksOffered());
+    }
+
+    @GetMapping
+    public List<Bid> list(@RequestParam UUID loadId) {
+        return bidRepository.findByLoad_LoadId(loadId);
+    }
+
+    @GetMapping("/{id}")
+    public Bid get(@PathVariable UUID id) {
+        return bidRepository.findById(id).orElse(null);
+    }
+
+    @PatchMapping("/{id}/reject")
+    public Bid reject(@PathVariable UUID id) {
+        return bidService.rejectBid(id);
+    }
+}

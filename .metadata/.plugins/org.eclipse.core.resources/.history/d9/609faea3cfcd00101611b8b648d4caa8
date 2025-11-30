@@ -1,0 +1,5 @@
+package com.tms.backend.repository;
+
+public class BookingRepository {
+
+}

@@ -1,0 +1,42 @@
+package com.tms.backend.repository;
+
+import com.tms.backend.entity.Bid;
+import com.tms.backend.entity.enums.BidStatus;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface BidRepository extends JpaRepository<Bid, UUID> {
+
+    List<Bid> findByLoad_LoadId(UUID loadId);
+
+    List<Bid> findByTransporter_TransporterId(UUID transporterId);
+
+    List<Bid> findByStatus(BidStatus status);
+
+    List<Bid> findByLoad_LoadIdAndStatus(UUID loadId, BidStatus status);
+
+    List<Bid> findByTransporter_TransporterIdAndStatus(UUID transporterId, BidStatus status);
+
+    List<Bid> findByLoad_LoadIdAndTransporter_TransporterId(UUID loadId, UUID transporterId);
+
+    List<Bid> findByLoad_LoadIdAndTransporter_TransporterIdAndStatus(UUID loadId, UUID transporterId, BidStatus status);
+
+    boolean existsByLoad_LoadIdAndStatus(UUID loadId, BidStatus status);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Bid b SET b.status = :status " +
+           "WHERE b.load.loadId = :loadId AND b.bidId <> :acceptedBidId " +
+           "AND b.status = com.tms.backend.entity.enums.BidStatus.PENDING")
+    void updateStatusForOthers(UUID loadId, UUID acceptedBidId, BidStatus status);
+    
+    @Query("SELECT b FROM Bid b WHERE b.load.loadId = :loadId AND b.status = com.tms.backend.entity.enums.BidStatus.PENDING")
+    List<Bid> findPendingOffersForLoad(UUID loadId);
+
+}

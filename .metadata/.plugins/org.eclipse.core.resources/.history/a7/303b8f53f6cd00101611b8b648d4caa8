@@ -1,0 +1,73 @@
+package com.tms.backend.controller;
+
+import com.tms.backend.dto.CreateLoadRequest;
+import com.tms.backend.entity.Bid;
+import com.tms.backend.entity.Load;
+import com.tms.backend.entity.enums.LoadStatus;
+import com.tms.backend.service.LoadService;
+import com.tms.backend.repository.LoadRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/load")
+public class LoadController {
+
+    private final LoadRepository loadRepository;
+    private final LoadService loadService;
+
+    public LoadController(LoadRepository loadRepository, LoadService loadService) {
+        this.loadRepository = loadRepository;
+        this.loadService = loadService;
+    }
+
+    @PostMapping
+    public Load createLoad(@RequestBody CreateLoadRequest req) {
+
+        Load load = new Load();
+        load.setShipperId(req.getShipperId());
+        load.setLoadingCity(req.getLoadingCity());
+        load.setUnloadingCity(req.getUnloadingCity());
+        load.setLoadingDate(req.getLoadingDate());
+        load.setProductType(req.getProductType());
+        load.setWeight(req.getWeight());
+        load.setWeightUnit(Enum.valueOf(com.tms.backend.entity.enums.WeightUnit.class, req.getWeightUnit()));
+        load.setTruckType(req.getTruckType());
+        load.setNoOfTrucks(req.getNoOfTrucks());
+        load.setStatus(LoadStatus.POSTED);
+
+        return loadRepository.save(load);
+    }
+
+    @GetMapping
+    public Page<Load> listLoads(@RequestParam String shipperId,
+                                @RequestParam(required = false) LoadStatus status,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "10") int size) {
+
+        if (status != null) {
+            return loadRepository.findByShipperIdAndStatus(shipperId, status, PageRequest.of(page, size));
+        }
+        return loadRepository.findByShipperId(shipperId, PageRequest.of(page, size));
+    }
+
+    @GetMapping("/{loadId}")
+    public Load getLoad(@PathVariable UUID loadId) {
+        return loadService.getLoadById(loadId);
+    }
+
+    @PatchMapping("/{loadId}/cancel")
+    public Load cancelLoad(@PathVariable UUID loadId) {
+        return loadService.cancelLoad(loadId);
+    }
+
+    @GetMapping("/{loadId}/best-bids")
+    public List<Bid> getBestBids(@PathVariable UUID loadId) {
+        return loadService.getBestBids(loadId);
+    }
+}
