@@ -134,12 +134,6 @@ POSTED → OPEN_FOR_BIDS → BOOKED
 
 ## Database Schema Diagram
 
-📌 Click to view full diagram:  
-[View Schema Diagram](./schema.pdf)
-
-![Schema Preview](./schema.pdf)
-
-
 Relations:
 
 ```
